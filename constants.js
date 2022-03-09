@@ -1,0 +1,10 @@
+export const PLAYER_WIDTH = 10;
+export const PLAYER_HEIGHT = 45;
+export const BOARD_WIDTH = 500;
+export const BOARD_HEIGHT = 300;
+export const SQUARE_WIDTH = 16;
+export const SQUARE_HEIGHT = SQUARE_WIDTH;
+export const PADDING = 10;
+export const SPEED = 0.15;
+export const PLAYER_LEFT_NAME = "Left Player";
+export const PLAYER_RIGHT_NAME = "Right Player";

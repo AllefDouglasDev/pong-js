@@ -1,42 +1,43 @@
-const BOARD_WIDTH = 500;
-const BOARD_HEIGHT = 300;
-const PLAYER_WIDTH = BOARD_WIDTH * 0.02;
-const PLAYER_HEIGHT = BOARD_HEIGHT * 0.15;
-const SQUARE_WIDTH = 16;
-const SQUARE_HEIGHT = SQUARE_WIDTH;
-const PADDING = 10;
-const SPEED = 0.15;
-const PLAYER_LEFT_NAME = "Left Player";
-const PLAYER_RIGHT_NAME = "Right Player";
+import {
+  PLAYER_WIDTH,
+  PLAYER_HEIGHT,
+  BOARD_HEIGHT,
+  BOARD_WIDTH,
+  PADDING,
+  PLAYER_LEFT_NAME,
+  PLAYER_RIGHT_NAME,
+  SPEED,
+  SQUARE_HEIGHT,
+  SQUARE_WIDTH,
+} from "./constants.js";
+import Player from "./player.js";
+import { setProperty, getProperty } from "./utils.js";
 
 const board = document.querySelector(".board");
 const square = document.querySelector(".square");
 const title = document.querySelector(".title");
-const [leftPlayer, rightPlayer] = document.querySelectorAll(".player");
 
 let lastDeltaTime;
+let leftPlayer;
+let rightPlayer;
 let moveSquareDirectionX = 1;
 let moveSquareDirectionY = 1;
-let moveLeftPlayerDirection = 0;
-let moveRightPlayerDirection = 0;
 
-window.addEventListener("keydown", setup, { once: true });
+setup();
+// window.addEventListener("keydown", setup, { once: true });
 
 function setup() {
   lastDeltaTime = null;
   title.innerHTML = "";
+
+  leftPlayer = new Player(board, PLAYER_LEFT_NAME);
+  leftPlayer.setPosition(PADDING, PADDING);
+
+  rightPlayer = new Player(board, PLAYER_RIGHT_NAME);
+  rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
+
   setProperty(board, "--width", `${BOARD_WIDTH}px`);
   setProperty(board, "--height", `${BOARD_HEIGHT}px`);
-
-  setProperty(leftPlayer, "--player-width", `${PLAYER_WIDTH}px`);
-  setProperty(leftPlayer, "--player-height", `${PLAYER_HEIGHT}px`);
-  setProperty(leftPlayer, "--x", `${PADDING}px`);
-  setProperty(leftPlayer, "--y", `${PADDING}px`);
-
-  setProperty(rightPlayer, "--player-width", `${PLAYER_WIDTH}px`);
-  setProperty(rightPlayer, "--player-height", `${PLAYER_HEIGHT}px`);
-  setProperty(rightPlayer, "--x", `${BOARD_WIDTH - PLAYER_WIDTH - 10}px`);
-  setProperty(rightPlayer, "--y", `${PADDING}px`);
 
   setProperty(square, "--square-width", `${SQUARE_WIDTH}px`);
   setProperty(square, "--square-height", `${SQUARE_HEIGHT}px`);
@@ -58,12 +59,16 @@ function update(time) {
   const delta = time - lastDeltaTime;
   lastDeltaTime = time;
 
-  movePlayers(delta);
+  leftPlayer.move(delta);
+  rightPlayer.move(delta);
+
   const { isAlive, winner } = moveSquare(delta);
 
   if (isAlive) {
     window.requestAnimationFrame(update);
   } else {
+    leftPlayer.remove();
+    rightPlayer.remove();
     title.innerHTML = `Winner: ${winner}<br /> Press any key to restart`;
     window.addEventListener("keydown", setup, { once: true });
   }
@@ -74,16 +79,16 @@ function handleDown(event) {
 
   switch (key) {
     case "ARROWDOWN":
-      moveRightPlayerDirection = 1;
+      rightPlayer.direction = 1;
       break;
     case "ARROWUP":
-      moveRightPlayerDirection = -1;
+      rightPlayer.direction = -1;
       break;
     case "S":
-      moveLeftPlayerDirection = 1;
+      leftPlayer.direction = 1;
       break;
     case "W":
-      moveLeftPlayerDirection = -1;
+      leftPlayer.direction = -1;
       break;
   }
 }
@@ -93,56 +98,26 @@ function handleUp(event) {
 
   switch (key) {
     case "ARROWDOWN":
-      moveRightPlayerDirection = 0;
+      rightPlayer.direction = 0;
       break;
     case "ARROWUP":
-      moveRightPlayerDirection = 0;
+      rightPlayer.direction = 0;
       break;
     case "S":
-      moveLeftPlayerDirection = 0;
+      leftPlayer.direction = 0;
       break;
     case "W":
-      moveLeftPlayerDirection = 0;
+      leftPlayer.direction = 0;
       break;
   }
-}
-
-function movePlayers(delta) {
-  const [, leftPlayerY] = getPosition(leftPlayer);
-  const [, rightPlayerY] = getPosition(rightPlayer);
-
-  movePlayer(leftPlayer, moveLeftPlayerDirection, leftPlayerY, delta);
-  movePlayer(rightPlayer, moveRightPlayerDirection, rightPlayerY, delta);
-}
-
-function movePlayer(player, direction, y, delta) {
-  if (direction !== 0) {
-    const canMove =
-      direction === 1 ? playerCanGoDown(player) : playerCanGoUp(player);
-
-    if (canMove) {
-      const moveTo = Math.floor(y + delta * SPEED * direction);
-      setProperty(player, "--y", `${moveTo}px`);
-    }
-  }
-}
-
-function playerCanGoUp(player) {
-  const [, y] = getPosition(player);
-  return y > PADDING;
-}
-
-function playerCanGoDown(player) {
-  const [, y] = getPosition(player);
-  return y + PLAYER_HEIGHT < BOARD_HEIGHT - PADDING;
 }
 
 function moveSquare(delta) {
   let isAlive = true;
   let winner = "";
   const [squareX, squareY] = getPosition(square);
-  const [leftPlayerX, leftPlayerY] = getPosition(leftPlayer);
-  const [rightPlayerX, rightPlayerY] = getPosition(rightPlayer);
+  const { x: leftPlayerX, y: leftPlayerY } = leftPlayer.position;
+  const { x: rightPlayerX, y: rightPlayerY } = rightPlayer.position;
 
   const sameRightPlayerX = squareX + SQUARE_WIDTH >= rightPlayerX;
   const sameRightPlayerY =
@@ -158,11 +133,11 @@ function moveSquare(delta) {
   } else if (squareX >= BOARD_WIDTH - SQUARE_WIDTH) {
     moveSquareDirectionX = -1;
     isAlive = false;
-    winner = PLAYER_LEFT_NAME;
+    winner = leftPlayer.name;
   } else if (squareX <= 0) {
     moveSquareDirectionX = 1;
     isAlive = false;
-    winner = PLAYER_RIGHT_NAME;
+    winner = rightPlayer.name;
   }
 
   if (squareY >= BOARD_HEIGHT - SQUARE_HEIGHT) {
@@ -186,12 +161,4 @@ function getPosition(element) {
     Math.floor(parseInt(getProperty(element, "--x"))),
     Math.floor(parseInt(getProperty(element, "--y"))),
   ];
-}
-
-function getProperty(element, property) {
-  return element.style.getPropertyValue(property);
-}
-
-function setProperty(element, property, value) {
-  element.style.setProperty(property, value);
 }

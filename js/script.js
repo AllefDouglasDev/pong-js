@@ -10,11 +10,15 @@ import {
   SQUARE_HEIGHT,
   SQUARE_WIDTH,
 } from "./constants.js";
+import Board from "./board.js";
 import Player from "./player.js";
-import { setProperty, getProperty } from "./utils.js";
+import { setProperty, getProperty } from "./properties.js";
 
-const board = document.querySelector(".board");
-const square = document.querySelector(".square");
+// const board = document.querySelector(".board");
+const board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+const square = document.createElement("div");
+square.classList.add("square");
+board.appendChild(square);
 const title = document.querySelector(".title");
 
 let lastDeltaTime;
@@ -35,9 +39,6 @@ function setup() {
 
   rightPlayer = new Player(board, PLAYER_RIGHT_NAME);
   rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
-
-  setProperty(board, "--width", `${BOARD_WIDTH}px`);
-  setProperty(board, "--height", `${BOARD_HEIGHT}px`);
 
   setProperty(square, "--square-width", `${SQUARE_WIDTH}px`);
   setProperty(square, "--square-height", `${SQUARE_HEIGHT}px`);

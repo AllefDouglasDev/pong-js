@@ -1,11 +1,5 @@
-import {
-  PADDING,
-  PLAYER_HEIGHT,
-  PLAYER_WIDTH,
-  BOARD_HEIGHT,
-  SPEED,
-} from "./constants.js";
-import { setProperty, getProperty } from "./utils.js";
+import { PADDING, PLAYER_HEIGHT, PLAYER_WIDTH, SPEED } from "./constants.js";
+import { setProperty, getProperty } from "./properties.js";
 
 export default class Player {
   #element;
@@ -13,12 +7,14 @@ export default class Player {
   #y;
   #direction;
   #name;
+  #board;
 
   constructor(board, name) {
     this.#x = 0;
     this.#y = 0;
-    this.#direction = 0;
     this.#name = name;
+    this.#board = board;
+    this.#direction = 0;
 
     this.#element = document.createElement("div");
     this.#element.classList.add("player");
@@ -57,7 +53,7 @@ export default class Player {
   }
 
   checkBottom() {
-    return this.position.y < BOARD_HEIGHT - PADDING;
+    return this.position.y + PLAYER_HEIGHT < this.#board.height - PADDING;
   }
 
   setSize() {

@@ -1,0 +1,62 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+:root {
+  --primary-color: rgb(105, 105, 105);
+}
+
+body {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #000;
+  overflow: hidden;
+}
+
+.title {
+  color: white;
+  font-size: 26px;
+  font-family: "Courier New", Courier, monospace;
+  text-align: center;
+}
+
+.board {
+  width: var(--width);
+  height: var(--height);
+  border: 1px solid var(--primary-color);
+
+  position: relative;
+}
+
+.player {
+  width: var(--player-width);
+  height: var(--player-height);
+  border: 1px solid var(--primary-color);
+
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+}
+
+.square {
+  width: var(--square-width);
+  height: var(--square-height);
+  background-color: var(--primary-color);
+
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+}
+
+.separator {
+  border: 5px dashed var(--primary-color);
+  position: absolute;
+  height: 100%;
+  left: calc(50% - 5px);
+}

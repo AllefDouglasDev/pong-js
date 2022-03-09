@@ -1,24 +1,25 @@
 import { PADDING, PLAYER_HEIGHT, PLAYER_WIDTH, SPEED } from "./constants.js";
 import { setProperty, getProperty } from "./properties.js";
+import Position from "./position.js";
 
 export default class Player {
   #element;
-  #x;
-  #y;
   #direction;
   #name;
   #board;
+  #position;
 
   constructor(board, name) {
-    this.#x = 0;
-    this.#y = 0;
     this.#name = name;
     this.#board = board;
     this.#direction = 0;
 
     this.#element = document.createElement("div");
     this.#element.classList.add("player");
-    this.setSize();
+
+    this.#position = new Position(this.#element);
+
+    this.#setSize();
     board.appendChild(this.#element);
   }
 
@@ -27,10 +28,7 @@ export default class Player {
   }
 
   get position() {
-    this.#x = Math.floor(parseInt(getProperty(this.#element, "--x")));
-    this.#y = Math.floor(parseInt(getProperty(this.#element, "--y")));
-
-    return { x: this.#x, y: this.#y };
+    return this.#position.position;
   }
 
   set direction(direction) {
@@ -38,37 +36,36 @@ export default class Player {
   }
 
   get #canMove() {
-    return this.#direction === 1 ? this.checkBottom() : this.checkTop();
+    return this.#direction === 1 ? this.#checkBottom() : this.#checkTop();
   }
 
   move(delta) {
     if (this.#direction === 0) return;
     if (!this.#canMove) return;
-    const moveTo = Math.floor(this.#y + delta * SPEED * this.#direction);
-    this.setPosition(this.#x, moveTo);
-  }
-
-  checkTop() {
-    return this.position.y > PADDING;
-  }
-
-  checkBottom() {
-    return this.position.y + PLAYER_HEIGHT < this.#board.height - PADDING;
-  }
-
-  setSize() {
-    setProperty(this.#element, "--player-width", `${PLAYER_WIDTH}px`);
-    setProperty(this.#element, "--player-height", `${PLAYER_HEIGHT}px`);
+    const moveTo = Math.floor(
+      this.#position.y + delta * SPEED * this.#direction
+    );
+    this.setPosition(this.#position.x, moveTo);
   }
 
   setPosition(x, y) {
-    this.#x = x;
-    this.#y = y;
-    setProperty(this.#element, "--x", `${x}px`);
-    setProperty(this.#element, "--y", `${y}px`);
+    this.#position.setPosition(x, y);
   }
 
   remove() {
     this.#element.remove();
+  }
+
+  #checkTop() {
+    return this.#position.y > PADDING;
+  }
+
+  #checkBottom() {
+    return this.#position.y + PLAYER_HEIGHT < this.#board.height - PADDING;
+  }
+
+  #setSize() {
+    setProperty(this.#element, "--player-width", `${PLAYER_WIDTH}px`);
+    setProperty(this.#element, "--player-height", `${PLAYER_HEIGHT}px`);
   }
 }

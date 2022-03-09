@@ -14,7 +14,6 @@ import Board from "./board.js";
 import Player from "./player.js";
 import { setProperty, getProperty } from "./properties.js";
 
-// const board = document.querySelector(".board");
 const board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
 const square = document.createElement("div");
 square.classList.add("square");
@@ -24,15 +23,17 @@ const title = document.querySelector(".title");
 let lastDeltaTime;
 let leftPlayer;
 let rightPlayer;
-let moveSquareDirectionX = 1;
-let moveSquareDirectionY = 1;
+let squareDirectionX;
+let squareDirectionY;
 
-setup();
-// window.addEventListener("keydown", setup, { once: true });
+// setup();
+window.addEventListener("keydown", setup, { once: true });
 
 function setup() {
   lastDeltaTime = null;
   title.innerHTML = "";
+  squareDirectionX = 1;
+  squareDirectionY = 1;
 
   leftPlayer = new Player(board, PLAYER_LEFT_NAME);
   leftPlayer.setPosition(PADDING, PADDING);
@@ -128,28 +129,28 @@ function moveSquare(delta) {
     squareY >= leftPlayerY && squareY <= leftPlayerY + PLAYER_HEIGHT;
 
   if (sameRightPlayerX && sameRightPlayerY) {
-    moveSquareDirectionX = -1;
+    squareDirectionX = -1;
   } else if (sameLeftPlayerX && sameLeftPlayerY) {
-    moveSquareDirectionX = 1;
+    squareDirectionX = 1;
   } else if (squareX >= BOARD_WIDTH - SQUARE_WIDTH) {
-    moveSquareDirectionX = -1;
+    squareDirectionX = -1;
     isAlive = false;
     winner = leftPlayer.name;
   } else if (squareX <= 0) {
-    moveSquareDirectionX = 1;
+    squareDirectionX = 1;
     isAlive = false;
     winner = rightPlayer.name;
   }
 
   if (squareY >= BOARD_HEIGHT - SQUARE_HEIGHT) {
-    moveSquareDirectionY = -1;
+    squareDirectionY = -1;
   }
   if (squareY <= 0) {
-    moveSquareDirectionY = 1;
+    squareDirectionY = 1;
   }
 
-  const moveToX = squareX + delta * SPEED * moveSquareDirectionX;
-  const moveToY = squareY + delta * SPEED * moveSquareDirectionY;
+  const moveToX = squareX + delta * SPEED * squareDirectionX;
+  const moveToY = squareY + delta * SPEED * squareDirectionY;
 
   setProperty(square, "--x", `${moveToX}px`);
   setProperty(square, "--y", `${moveToY}px`);

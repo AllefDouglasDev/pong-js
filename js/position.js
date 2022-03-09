@@ -17,10 +17,6 @@ export default class Position {
     return Math.floor(parseInt(getProperty(this.#element, "--y")));
   }
 
-  get position() {
-    return { x: this.x, y: this.y };
-  }
-
   setPosition(x, y) {
     setProperty(this.#element, "--x", `${x}px`);
     setProperty(this.#element, "--y", `${y}px`);

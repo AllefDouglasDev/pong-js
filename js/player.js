@@ -28,7 +28,7 @@ export default class Player {
   }
 
   get position() {
-    return this.#position.position;
+    return { x: this.#position.x, y: this.#position.y };
   }
 
   set direction(direction) {

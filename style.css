@@ -2,6 +2,7 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  font-family: "Courier New", Courier, monospace;
 }
 
 :root {
@@ -22,7 +23,6 @@ body {
 .title {
   color: white;
   font-size: 26px;
-  font-family: "Courier New", Courier, monospace;
   text-align: center;
 }
 
@@ -59,8 +59,24 @@ body {
 }
 
 .separator {
-  border: 5px dashed var(--primary-color);
+  border: 2px dashed var(--primary-color);
   position: absolute;
   height: 100%;
-  left: calc(50% - 5px);
+  left: 50%;
+}
+
+.point {
+  color: white;
+  font-size: 40px;
+  position: absolute;
+  top: var(--y);
+  left: var(--x);
+}
+
+.hide {
+  display: none;
+}
+
+.show {
+  display: block;
 }

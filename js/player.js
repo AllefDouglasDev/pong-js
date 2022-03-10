@@ -1,18 +1,21 @@
 import { PADDING, PLAYER_HEIGHT, PLAYER_WIDTH, SPEED } from "./constants.js";
 import { setProperty } from "./properties.js";
 import Position from "./position.js";
+import Point from "./point.js";
 
 export default class Player {
-  #element;
-  #direction;
   #name;
   #board;
+  #point;
+  #element;
   #position;
+  #direction;
 
   constructor(board, name) {
     this.#name = name;
     this.#board = board;
     this.#direction = 0;
+    this.#point = new Point(board);
 
     this.#element = document.createElement("div");
     this.#element.classList.add("player");
@@ -21,6 +24,7 @@ export default class Player {
     this.#position = new Position(this.#element);
     this.#position.setSize(PLAYER_WIDTH, PLAYER_HEIGHT);
     this.#setSize();
+    this.hide();
   }
 
   get name() {
@@ -51,12 +55,28 @@ export default class Player {
     this.setPosition(this.#position.x, moveTo);
   }
 
+  remove() {
+    this.#element.remove();
+  }
+
+  incrementPoint() {
+    this.#point.increment();
+  }
+
   setPosition(x, y) {
     this.#position.setPosition(x, y);
   }
 
-  remove() {
-    this.#element.remove();
+  setPointPosition(x, y) {
+    this.#point.setPosition(x, y);
+  }
+
+  show() {
+    this.#element.classList.add("show");
+  }
+
+  hide() {
+    this.#element.classList.add("hide");
   }
 
   #canMove() {

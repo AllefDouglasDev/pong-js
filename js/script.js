@@ -11,16 +11,21 @@ import Square from "./square.js";
 import Player from "./player.js";
 
 class Game {
-  board;
-  rightPlayer;
-  leftPlayer;
-  square;
-  lastDeltaTime;
   title;
+  board;
+  square;
+  leftPlayer;
+  rightPlayer;
+  lastDeltaTime;
 
   constructor() {
     this.lastDeltaTime = null;
     this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+    this.square = new Square(this.board);
+    this.leftPlayer = new Player(this.board, PLAYER_LEFT_NAME);
+    this.rightPlayer = new Player(this.board, PLAYER_RIGHT_NAME);
+    this.leftPlayer.setPointPosition(BOARD_WIDTH * 0.25, PADDING);
+    this.rightPlayer.setPointPosition(BOARD_WIDTH * 0.75, PADDING);
 
     window.addEventListener("keydown", this.setup, { once: true });
   }
@@ -29,13 +34,16 @@ class Game {
     this.lastDeltaTime = null;
     this.setTitle("");
 
-    this.square = new Square(this.board);
-    this.leftPlayer = new Player(this.board, PLAYER_LEFT_NAME);
-    this.rightPlayer = new Player(this.board, PLAYER_RIGHT_NAME);
-
-    this.leftPlayer.setPosition(PADDING, PADDING);
-    this.rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
+    this.leftPlayer.setPosition(PADDING, this.board.height / 2);
+    this.rightPlayer.setPosition(
+      this.board.width - PADDING - PLAYER_WIDTH,
+      this.board.height / 2
+    );
     this.square.setPosition(this.board.width / 2, this.board.height / 2);
+
+    this.leftPlayer.show();
+    this.rightPlayer.show();
+    this.square.show();
 
     window.requestAnimationFrame(this.update);
     window.addEventListener("keydown", this.handleKeyDown);
@@ -57,31 +65,17 @@ class Game {
     this.square.update(delta, this.leftPlayer, this.rightPlayer);
 
     if (this.square.winner !== null) {
-      this.finishGame();
+      this.restartGame();
       return;
     }
 
     window.requestAnimationFrame(this.update);
   };
 
-  finishGame = () => {
-    this.setTitle(
-      `Winner: ${this.square.winner.name}<br /> Press "SPACE" to restart`
-    );
-
-    this.leftPlayer.remove();
-    this.rightPlayer.remove();
-    this.square.remove();
-
-    window.addEventListener("keydown", this.restartGame, { once: true });
-  };
-
   restartGame = (event) => {
-    if (event.code === "Space") {
-      this.setup();
-    } else {
-      window.addEventListener("keydown", this.restartGame, { once: true });
-    }
+    this.square.reset();
+
+    this.setup();
   };
 
   handleKeyUp = (event) => {

@@ -12,8 +12,8 @@ export default class Square {
 
   constructor(board) {
     this.#board = board;
-    this.#directionX = 1;
-    this.#directionY = 1;
+    this.#directionX = this.#randomDirection();
+    this.#directionY = this.#randomDirection();
     this.#winner = null;
 
     this.#element = document.createElement("div");
@@ -23,6 +23,7 @@ export default class Square {
     this.#position = new Position(this.#element);
     this.#position.setSize(SQUARE_WIDTH, SQUARE_HEIGHT);
     this.#setSize();
+    this.hide();
   }
 
   get element() {
@@ -36,9 +37,11 @@ export default class Square {
   update(delta, leftPlayer, rightPlayer) {
     if (this.#isTouchingLeftWall()) {
       this.#winner = rightPlayer;
+      rightPlayer.incrementPoint();
       return;
     } else if (this.#isTouchingRightWall()) {
       this.#winner = leftPlayer;
+      leftPlayer.incrementPoint();
       return;
     }
 
@@ -70,6 +73,24 @@ export default class Square {
 
   remove() {
     this.#element.remove();
+  }
+
+  reset() {
+    this.#winner = null;
+    this.#directionX = this.#randomDirection();
+    this.#directionY = this.#randomDirection();
+  }
+
+  show() {
+    this.#element.classList.add("show");
+  }
+
+  hide() {
+    this.#element.classList.add("hide");
+  }
+
+  #randomDirection() {
+    return Math.random() > 0.5 ? 1 : -1;
   }
 
   #isTouchingLeftPlayer(player) {

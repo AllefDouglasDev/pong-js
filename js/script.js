@@ -20,10 +20,12 @@ class Game {
 
   constructor() {
     this.lastDeltaTime = null;
+
     this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
     this.square = new Square(this.board);
     this.leftPlayer = new Player(this.board, PLAYER_LEFT_NAME);
     this.rightPlayer = new Player(this.board, PLAYER_RIGHT_NAME);
+
     this.leftPlayer.setPointPosition(BOARD_WIDTH * 0.25, PADDING);
     this.rightPlayer.setPointPosition(BOARD_WIDTH * 0.75, PADDING);
 

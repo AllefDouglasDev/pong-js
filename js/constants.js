@@ -6,5 +6,6 @@ export const SQUARE_WIDTH = 16;
 export const SQUARE_HEIGHT = SQUARE_WIDTH;
 export const PADDING = 10;
 export const SPEED = 0.15;
+export const SPEED_INCREASE = 0.0001;
 export const PLAYER_LEFT_NAME = "Left Player";
 export const PLAYER_RIGHT_NAME = "Right Player";

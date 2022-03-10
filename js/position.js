@@ -14,11 +14,11 @@ export default class Position {
   }
 
   get x() {
-    return Math.floor(parseInt(getProperty(this.#element, "--x")));
+    return parseInt(getProperty(this.#element, "--x"));
   }
 
   get y() {
-    return Math.floor(parseInt(getProperty(this.#element, "--y")));
+    return parseInt(getProperty(this.#element, "--y"));
   }
 
   get endX() {

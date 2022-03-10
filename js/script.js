@@ -10,8 +10,6 @@ import Board from "./board.js";
 import Square from "./square.js";
 import Player from "./player.js";
 
-new Game();
-
 class Game {
   board;
   rightPlayer;
@@ -120,3 +118,5 @@ class Game {
     this.title.innerHTML = text;
   };
 }
+
+new Game();

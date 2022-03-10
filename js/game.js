@@ -19,8 +19,6 @@ export default class Game {
   lastDeltaTime;
 
   constructor() {
-    this.lastDeltaTime = null;
-
     this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
     this.square = new Square(this.board);
     this.leftPlayer = new Player(this.board, PLAYER_LEFT_NAME);
@@ -43,13 +41,12 @@ export default class Game {
   };
 
   update = (time) => {
-    if (this.lastDeltaTime === null) {
-      this.lastDeltaTime = time;
+    const delta = this.calculateDelta(time);
+
+    if (delta === 0) {
       window.requestAnimationFrame(this.update);
       return;
     }
-
-    const delta = this.calculateDelta(time);
 
     this.leftPlayer.update(delta);
     this.rightPlayer.update(delta);
@@ -132,6 +129,11 @@ export default class Game {
   };
 
   calculateDelta = (time) => {
+    if (this.lastDeltaTime == null) {
+      this.lastDeltaTime = time;
+      return 0;
+    }
+
     const delta = time - this.lastDeltaTime;
     this.lastDeltaTime = time;
     return delta;

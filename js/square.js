@@ -8,11 +8,13 @@ export default class Square {
   #position;
   #directionX;
   #directionY;
+  #winner;
 
   constructor(board) {
     this.#board = board;
     this.#directionX = 1;
     this.#directionY = 1;
+    this.#winner = null;
 
     this.#element = document.createElement("div");
     this.#element.classList.add("square");
@@ -27,11 +29,17 @@ export default class Square {
     return this.#element;
   }
 
-  move(delta, leftPlayer, rightPlayer) {
+  get winner() {
+    return this.#winner;
+  }
+
+  update(delta, leftPlayer, rightPlayer) {
     if (this.#isTouchingLeftWall()) {
-      return rightPlayer;
+      this.#winner = rightPlayer;
+      return;
     } else if (this.#isTouchingRightWall()) {
-      return leftPlayer;
+      this.#winner = leftPlayer;
+      return;
     }
 
     if (this.#isTouchingLeftPlayer(leftPlayer)) {
@@ -54,8 +62,6 @@ export default class Square {
     );
 
     this.setPosition(moveToX, moveToY);
-
-    return null;
   }
 
   setPosition(x, y) {

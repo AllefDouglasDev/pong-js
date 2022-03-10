@@ -31,14 +31,6 @@ export default class Player {
     return this.#position;
   }
 
-  set direction(direction) {
-    this.#direction = direction;
-  }
-
-  get #canMove() {
-    return this.#direction === 1 ? this.#checkBottom() : this.#checkTop();
-  }
-
   get width() {
     return PLAYER_WIDTH;
   }
@@ -47,9 +39,12 @@ export default class Player {
     return PLAYER_HEIGHT;
   }
 
-  move(delta) {
-    if (this.#direction === 0) return;
-    if (!this.#canMove) return;
+  set direction(direction) {
+    this.#direction = direction;
+  }
+
+  update(delta) {
+    if (this.#canMove() == false) return;
     const moveTo = Math.floor(
       this.#position.y + delta * SPEED * this.#direction
     );
@@ -62,6 +57,11 @@ export default class Player {
 
   remove() {
     this.#element.remove();
+  }
+
+  #canMove() {
+    if (this.#direction === 0) return false;
+    return this.#direction === 1 ? this.#checkBottom() : this.#checkTop();
   }
 
   #checkTop() {

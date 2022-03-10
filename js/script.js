@@ -52,25 +52,36 @@ class Game {
     const delta = time - this.lastDeltaTime;
     this.lastDeltaTime = time;
 
-    this.leftPlayer.move(delta);
-    this.rightPlayer.move(delta);
+    this.leftPlayer.update(delta);
+    this.rightPlayer.update(delta);
+    this.square.update(delta, this.leftPlayer, this.rightPlayer);
 
-    const winner = this.square.move(delta, this.leftPlayer, this.rightPlayer);
-
-    if (winner !== null) {
-      this.finishGame(winner);
+    if (this.square.winner !== null) {
+      this.finishGame();
       return;
     }
 
     window.requestAnimationFrame(this.update);
   };
 
-  finishGame = (winner) => {
+  finishGame = () => {
+    this.setTitle(
+      `Winner: ${this.square.winner.name}<br /> Press "SPACE" to restart`
+    );
+
     this.leftPlayer.remove();
     this.rightPlayer.remove();
     this.square.remove();
-    this.setTitle(`Winner: ${winner.name}<br /> Press any key to restart`);
-    window.addEventListener("keydown", this.setup, { once: true });
+
+    window.addEventListener("keydown", this.restartGame, { once: true });
+  };
+
+  restartGame = (event) => {
+    if (event.code === "Space") {
+      this.setup();
+    } else {
+      window.addEventListener("keydown", this.restartGame, { once: true });
+    }
   };
 
   handleKeyUp = (event) => {

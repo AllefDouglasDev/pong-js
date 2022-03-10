@@ -10,98 +10,7 @@ import Board from "./board.js";
 import Square from "./square.js";
 import Player from "./player.js";
 
-// const board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
-// let square;
-// let leftPlayer;
-// let rightPlayer;
-// const title = document.querySelector(".title");
-
-// let lastDeltaTime;
-
-// // setup();
-// window.addEventListener("keydown", setup, { once: true });
-
-// function setup() {
-//   lastDeltaTime = null;
-//   title.innerHTML = "";
-
-//   square = new Square(board);
-//   leftPlayer = new Player(board, PLAYER_LEFT_NAME);
-//   rightPlayer = new Player(board, PLAYER_RIGHT_NAME);
-
-//   leftPlayer.setPosition(PADDING, PADDING);
-//   rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
-//   square.setPosition(board.width / 2, board.height / 2);
-
-//   window.requestAnimationFrame(update);
-//   window.addEventListener("keydown", handleDown);
-//   window.addEventListener("keyup", handleUp);
-// }
-
-// function update(time) {
-//   if (lastDeltaTime === null) {
-//     lastDeltaTime = time;
-//     window.requestAnimationFrame(update);
-//     return;
-//   }
-
-//   const delta = time - lastDeltaTime;
-//   lastDeltaTime = time;
-
-//   leftPlayer.move(delta);
-//   rightPlayer.move(delta);
-
-//   const winner = square.move(delta, leftPlayer, rightPlayer);
-
-//   if (winner !== null) {
-//     leftPlayer.remove();
-//     rightPlayer.remove();
-//     square.remove();
-//     title.innerHTML = `Winner: ${winner.name}<br /> Press any key to restart`;
-//     window.addEventListener("keydown", setup, { once: true });
-//     return;
-//   }
-
-//   window.requestAnimationFrame(update);
-// }
-
-// function handleDown(event) {
-//   const key = event.key.toUpperCase();
-
-//   switch (key) {
-//     case "ARROWDOWN":
-//       rightPlayer.direction = 1;
-//       break;
-//     case "ARROWUP":
-//       rightPlayer.direction = -1;
-//       break;
-//     case "S":
-//       leftPlayer.direction = 1;
-//       break;
-//     case "W":
-//       leftPlayer.direction = -1;
-//       break;
-//   }
-// }
-
-// function handleUp(event) {
-//   const key = event.key.toUpperCase();
-
-//   switch (key) {
-//     case "ARROWDOWN":
-//       rightPlayer.direction = 0;
-//       break;
-//     case "ARROWUP":
-//       rightPlayer.direction = 0;
-//       break;
-//     case "S":
-//       leftPlayer.direction = 0;
-//       break;
-//     case "W":
-//       leftPlayer.direction = 0;
-//       break;
-//   }
-// }
+new Game();
 
 class Game {
   board;
@@ -211,5 +120,3 @@ class Game {
     this.title.innerHTML = text;
   };
 }
-
-new Game();

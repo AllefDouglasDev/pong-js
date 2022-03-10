@@ -1,166 +1,215 @@
 import {
   PLAYER_WIDTH,
-  PLAYER_HEIGHT,
   BOARD_HEIGHT,
   BOARD_WIDTH,
   PADDING,
   PLAYER_LEFT_NAME,
   PLAYER_RIGHT_NAME,
-  SPEED,
-  SQUARE_HEIGHT,
-  SQUARE_WIDTH,
 } from "./constants.js";
 import Board from "./board.js";
+import Square from "./square.js";
 import Player from "./player.js";
-import { setProperty, getProperty } from "./properties.js";
 
-const board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
-const square = document.createElement("div");
-square.classList.add("square");
-board.appendChild(square);
-const title = document.querySelector(".title");
+// const board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+// let square;
+// let leftPlayer;
+// let rightPlayer;
+// const title = document.querySelector(".title");
 
-let lastDeltaTime;
-let leftPlayer;
-let rightPlayer;
-let squareDirectionX;
-let squareDirectionY;
+// let lastDeltaTime;
 
-// setup();
-window.addEventListener("keydown", setup, { once: true });
+// // setup();
+// window.addEventListener("keydown", setup, { once: true });
 
-function setup() {
-  lastDeltaTime = null;
-  title.innerHTML = "";
-  squareDirectionX = 1;
-  squareDirectionY = 1;
+// function setup() {
+//   lastDeltaTime = null;
+//   title.innerHTML = "";
 
-  leftPlayer = new Player(board, PLAYER_LEFT_NAME);
-  leftPlayer.setPosition(PADDING, PADDING);
+//   square = new Square(board);
+//   leftPlayer = new Player(board, PLAYER_LEFT_NAME);
+//   rightPlayer = new Player(board, PLAYER_RIGHT_NAME);
 
-  rightPlayer = new Player(board, PLAYER_RIGHT_NAME);
-  rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
+//   leftPlayer.setPosition(PADDING, PADDING);
+//   rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
+//   square.setPosition(board.width / 2, board.height / 2);
 
-  setProperty(square, "--square-width", `${SQUARE_WIDTH}px`);
-  setProperty(square, "--square-height", `${SQUARE_HEIGHT}px`);
-  setProperty(square, "--x", `${BOARD_WIDTH / 3}px`);
-  setProperty(square, "--y", `${BOARD_HEIGHT / 3}px`);
+//   window.requestAnimationFrame(update);
+//   window.addEventListener("keydown", handleDown);
+//   window.addEventListener("keyup", handleUp);
+// }
 
-  window.requestAnimationFrame(update);
-  window.addEventListener("keydown", handleDown);
-  window.addEventListener("keyup", handleUp);
+// function update(time) {
+//   if (lastDeltaTime === null) {
+//     lastDeltaTime = time;
+//     window.requestAnimationFrame(update);
+//     return;
+//   }
+
+//   const delta = time - lastDeltaTime;
+//   lastDeltaTime = time;
+
+//   leftPlayer.move(delta);
+//   rightPlayer.move(delta);
+
+//   const winner = square.move(delta, leftPlayer, rightPlayer);
+
+//   if (winner !== null) {
+//     leftPlayer.remove();
+//     rightPlayer.remove();
+//     square.remove();
+//     title.innerHTML = `Winner: ${winner.name}<br /> Press any key to restart`;
+//     window.addEventListener("keydown", setup, { once: true });
+//     return;
+//   }
+
+//   window.requestAnimationFrame(update);
+// }
+
+// function handleDown(event) {
+//   const key = event.key.toUpperCase();
+
+//   switch (key) {
+//     case "ARROWDOWN":
+//       rightPlayer.direction = 1;
+//       break;
+//     case "ARROWUP":
+//       rightPlayer.direction = -1;
+//       break;
+//     case "S":
+//       leftPlayer.direction = 1;
+//       break;
+//     case "W":
+//       leftPlayer.direction = -1;
+//       break;
+//   }
+// }
+
+// function handleUp(event) {
+//   const key = event.key.toUpperCase();
+
+//   switch (key) {
+//     case "ARROWDOWN":
+//       rightPlayer.direction = 0;
+//       break;
+//     case "ARROWUP":
+//       rightPlayer.direction = 0;
+//       break;
+//     case "S":
+//       leftPlayer.direction = 0;
+//       break;
+//     case "W":
+//       leftPlayer.direction = 0;
+//       break;
+//   }
+// }
+
+class Game {
+  board;
+  rightPlayer;
+  leftPlayer;
+  square;
+  lastDeltaTime;
+  title;
+
+  constructor() {
+    this.lastDeltaTime = null;
+    this.board = new Board(BOARD_WIDTH, BOARD_HEIGHT);
+
+    window.addEventListener("keydown", this.setup, { once: true });
+  }
+
+  setup = () => {
+    this.lastDeltaTime = null;
+    this.setTitle("");
+
+    this.square = new Square(this.board);
+    this.leftPlayer = new Player(this.board, PLAYER_LEFT_NAME);
+    this.rightPlayer = new Player(this.board, PLAYER_RIGHT_NAME);
+
+    this.leftPlayer.setPosition(PADDING, PADDING);
+    this.rightPlayer.setPosition(BOARD_WIDTH - PADDING - PLAYER_WIDTH, PADDING);
+    this.square.setPosition(this.board.width / 2, this.board.height / 2);
+
+    window.requestAnimationFrame(this.update);
+    window.addEventListener("keydown", this.handleKeyDown);
+    window.addEventListener("keyup", this.handleKeyUp);
+  };
+
+  update = (time) => {
+    if (this.lastDeltaTime === null) {
+      this.lastDeltaTime = time;
+      window.requestAnimationFrame(this.update);
+      return;
+    }
+
+    const delta = time - this.lastDeltaTime;
+    this.lastDeltaTime = time;
+
+    this.leftPlayer.move(delta);
+    this.rightPlayer.move(delta);
+
+    const winner = this.square.move(delta, this.leftPlayer, this.rightPlayer);
+
+    if (winner !== null) {
+      this.finishGame(winner);
+      return;
+    }
+
+    window.requestAnimationFrame(this.update);
+  };
+
+  finishGame = (winner) => {
+    this.leftPlayer.remove();
+    this.rightPlayer.remove();
+    this.square.remove();
+    this.setTitle(`Winner: ${winner.name}<br /> Press any key to restart`);
+    window.addEventListener("keydown", this.setup, { once: true });
+  };
+
+  handleKeyUp = (event) => {
+    const key = event.key.toUpperCase();
+
+    switch (key) {
+      case "ARROWDOWN":
+        this.rightPlayer.direction = 0;
+        break;
+      case "ARROWUP":
+        this.rightPlayer.direction = 0;
+        break;
+      case "S":
+        this.leftPlayer.direction = 0;
+        break;
+      case "W":
+        this.leftPlayer.direction = 0;
+        break;
+    }
+  };
+
+  handleKeyDown = (event) => {
+    const key = event.key.toUpperCase();
+
+    switch (key) {
+      case "ARROWDOWN":
+        this.rightPlayer.direction = 1;
+        break;
+      case "ARROWUP":
+        this.rightPlayer.direction = -1;
+        break;
+      case "S":
+        this.leftPlayer.direction = 1;
+        break;
+      case "W":
+        this.leftPlayer.direction = -1;
+        break;
+    }
+  };
+
+  setTitle = (text) => {
+    if (this.title == null) {
+      this.title = document.querySelector(".title");
+    }
+    this.title.innerHTML = text;
+  };
 }
 
-function update(time) {
-  if (lastDeltaTime === null) {
-    lastDeltaTime = time;
-    window.requestAnimationFrame(update);
-    return;
-  }
-
-  const delta = time - lastDeltaTime;
-  lastDeltaTime = time;
-
-  leftPlayer.move(delta);
-  rightPlayer.move(delta);
-
-  const { isAlive, winner } = moveSquare(delta);
-
-  if (isAlive) {
-    window.requestAnimationFrame(update);
-  } else {
-    leftPlayer.remove();
-    rightPlayer.remove();
-    title.innerHTML = `Winner: ${winner}<br /> Press any key to restart`;
-    window.addEventListener("keydown", setup, { once: true });
-  }
-}
-
-function handleDown(event) {
-  const key = event.key.toUpperCase();
-
-  switch (key) {
-    case "ARROWDOWN":
-      rightPlayer.direction = 1;
-      break;
-    case "ARROWUP":
-      rightPlayer.direction = -1;
-      break;
-    case "S":
-      leftPlayer.direction = 1;
-      break;
-    case "W":
-      leftPlayer.direction = -1;
-      break;
-  }
-}
-
-function handleUp(event) {
-  const key = event.key.toUpperCase();
-
-  switch (key) {
-    case "ARROWDOWN":
-      rightPlayer.direction = 0;
-      break;
-    case "ARROWUP":
-      rightPlayer.direction = 0;
-      break;
-    case "S":
-      leftPlayer.direction = 0;
-      break;
-    case "W":
-      leftPlayer.direction = 0;
-      break;
-  }
-}
-
-function moveSquare(delta) {
-  let isAlive = true;
-  let winner = "";
-  const [squareX, squareY] = getPosition(square);
-  const { x: leftPlayerX, y: leftPlayerY } = leftPlayer.position;
-  const { x: rightPlayerX, y: rightPlayerY } = rightPlayer.position;
-
-  const sameRightPlayerX = squareX + SQUARE_WIDTH >= rightPlayerX;
-  const sameRightPlayerY =
-    squareY >= rightPlayerY && squareY <= rightPlayerY + PLAYER_HEIGHT;
-  const sameLeftPlayerX = squareX <= leftPlayerX + PLAYER_WIDTH;
-  const sameLeftPlayerY =
-    squareY >= leftPlayerY && squareY <= leftPlayerY + PLAYER_HEIGHT;
-
-  if (sameRightPlayerX && sameRightPlayerY) {
-    squareDirectionX = -1;
-  } else if (sameLeftPlayerX && sameLeftPlayerY) {
-    squareDirectionX = 1;
-  } else if (squareX >= BOARD_WIDTH - SQUARE_WIDTH) {
-    squareDirectionX = -1;
-    isAlive = false;
-    winner = leftPlayer.name;
-  } else if (squareX <= 0) {
-    squareDirectionX = 1;
-    isAlive = false;
-    winner = rightPlayer.name;
-  }
-
-  if (squareY >= BOARD_HEIGHT - SQUARE_HEIGHT) {
-    squareDirectionY = -1;
-  }
-  if (squareY <= 0) {
-    squareDirectionY = 1;
-  }
-
-  const moveToX = squareX + delta * SPEED * squareDirectionX;
-  const moveToY = squareY + delta * SPEED * squareDirectionY;
-
-  setProperty(square, "--x", `${moveToX}px`);
-  setProperty(square, "--y", `${moveToY}px`);
-
-  return { isAlive, winner };
-}
-
-function getPosition(element) {
-  return [
-    Math.floor(parseInt(getProperty(element, "--x"))),
-    Math.floor(parseInt(getProperty(element, "--y"))),
-  ];
-}
+new Game();

@@ -1,5 +1,5 @@
 import { PADDING, PLAYER_HEIGHT, PLAYER_WIDTH, SPEED } from "./constants.js";
-import { setProperty, getProperty } from "./properties.js";
+import { setProperty } from "./properties.js";
 import Position from "./position.js";
 
 export default class Player {
@@ -16,11 +16,11 @@ export default class Player {
 
     this.#element = document.createElement("div");
     this.#element.classList.add("player");
+    board.appendChild(this.#element);
 
     this.#position = new Position(this.#element);
-
+    this.#position.setSize(PLAYER_WIDTH, PLAYER_HEIGHT);
     this.#setSize();
-    board.appendChild(this.#element);
   }
 
   get name() {
@@ -28,7 +28,7 @@ export default class Player {
   }
 
   get position() {
-    return { x: this.#position.x, y: this.#position.y };
+    return this.#position;
   }
 
   set direction(direction) {
@@ -37,6 +37,14 @@ export default class Player {
 
   get #canMove() {
     return this.#direction === 1 ? this.#checkBottom() : this.#checkTop();
+  }
+
+  get width() {
+    return PLAYER_WIDTH;
+  }
+
+  get height() {
+    return PLAYER_HEIGHT;
   }
 
   move(delta) {
